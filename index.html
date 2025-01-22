@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RonnTube</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #ffffff; /* Latar belakang putih */
+            color: black; /* Teks utama hitam untuk kontras */
+            overflow-y: auto; /* Memastikan scroll vertikal aktif */
+        }
+    
+        /* Header */
+        header {
+            background-color: #ffffff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Tambahkan shadow agar terlihat lebih elegan */
+        }
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        header .logo img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        header .logo span {
+            color: rgb(0, 0, 0);
+        }
+    
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            position: relative;
+            width: 50%;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            font-size: 16px;
+            color: #333;
+        }
+        .search-bar input:focus {
+            outline: none;
+            border-color: #ffffff;
+        }
+        .search-bar .search-button {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+        .search-bar .search-button img {
+            width: 20px;
+            height: 20px;
+        }
+    
+        /* Profile */
+        header .profile {
+            display: flex;
+            align-items: center;
+        }
+        header .profile img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+    
+        /* Sidebar */
+        nav {
+            background-color: #ffffff;
+            width: 240px;
+            height: calc(100vh - 60px); /* Pastikan sidebar tidak melebihi tinggi layar */
+            position: fixed;
+            top: 60px;
+            left: 0;
+            overflow-y: auto; /* Aktifkan scroll pada sidebar jika konten melebihi tinggi */
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            padding-top: 20px;
+        }
+        nav a {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        nav a:hover {
+            background-color: #ddd;
+        }
+        nav a img {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+        }
+    
+        /* Main Content */
+        main {
+            margin-left: 240px;
+            margin-top: 60px;
+            padding: 20px;
+        }
+    
+        /* Video Gallery */
+        .videos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+    
+        /* Video Item */
+        .video {
+            width: 300px;
+            background: #ffffff; /* Latar belakang video menjadi putih */
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Shadow hitam */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+    
+        .video img {
+            width: 100%;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+    
+        .video:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7); /* Shadow hitam saat hover */
+        }
+    
+        .video:hover img {
+            transform: scale(1.1);
+        }
+    
+        /* Info Teks Video */
+        .video .info {
+            padding: 10px;
+            color: white; /* Teks putih di bawah video */
+        }
+    
+        /* Judul Video */
+        .video .info h3 {
+            font-size: 16px;
+            margin: 5px 0;
+            color: black; /* Teks judul video menjadi hitam */
+        }
+    
+        /* Deskripsi Video */
+        .video .info p {
+            font-size: 14px;
+            color: #000000; /* Teks deskripsi video abu-abu terang */
+        }
+    
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-bar {
+                width: 80%;
+            }
+            .videos {
+                justify-content: center;
+            }
+            .video {
+                width: 100%;
+            }
+        }
+    </style>    
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="https://media-hosting.imagekit.io//b710e67c4fa74e67/youtube.png?Expires=1832155045&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Fi8KxVNnHUfw7y10bG46GhiBxyTpy4WF1lemJVrcCelk8v-umNtl-4cLFt8GwfcWPorQBcxZB~kAUVKHiEJgIIN9yep9LJHUjNAb2NbUHr-SumzsNxTH1d16Hxthr0~7-x~ZGN0cOzBUQJvTMJ8t3sNcvIvDlZlbZ52v1dGhlaUB6XID73vD1xlFW4qKoxOS2r0j5mXUzzaHTFHB9Gl8A72vVI~7RgYqhpqYujJjj7qU1UQ1Af~U-tNqc6vg7vFnnwtU3y~k~0IBrTzkWVHfDwdQtvBg-HsOqhIho7uiV9j1xweWNhRTNkcrSmmABhKP7x20g6mJ3A5y-sD4YotRNg__" alt="YouTube Logo">
+            <span>RonnTube</span>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Telusuri">
+            <button class="search-button">
+                <img src="https://media-hosting.imagekit.io//0f037ae4c8244251/search.png?Expires=1832123858&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=n2C~kNzVUS1rcKauCBPpR2JY2mqaAoWZwlpzJKkNVSOmYWhKGcZWbXulSKbhq3Umdi4uKouuzOKSSEazmDv0ebG8XFARSNzEf~V8r9X95~hRQ5ILAjovm4ORvJCM7b~MU25vGybhxWfDb6QntaCuWvHnHsy0kBGK~iYg5ijjED978aX2avGWYvxonlW1glzrastCgcsEerhitbHrkzXWyZRPp4EJQmhEEfqrgiiOcyAooir18qaJ5gUi231Ns2JWIsVS1AgZWNEF47Wsq31X5TVDt~CR64kT26Ya3yFzN9J0RSir5eDqSYBnE~TskuSyAcEEqyGH-fIxBahrjlitFA__" alt="Search Icon">
+            </button>
+        </div>
+        <div class="profile">
+        </div>
+    </header>
+
+    <nav>
+        <a href="#"><img src="https://media-hosting.imagekit.io//ba004bfb10b242a7/home.png?Expires=1832146616&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=tzZdpX6eQi9F6qqkk4OxqXu~HkFizdQUHYmIqHIMux39~DomKNk3aJ8vnAcJl4ZDdaDSkAK93yn15G9vi4pNo5ciC2wVAVjzJXv6Gr1oHfuayVa1aOg8~isDjDqXmLMeVewdZj93aqZlqg-RKS8SzLYy-JtPC6GpuP1eR2gEAsFQI3IY5j~jpIVGUM7xS0CgMptviB0fW4DifgIt16CxWxjxmR1JpaXl~Qe9m713KTW~i4rLc3-xFpnb7XOQNQ1V62L~Lp9XeghcT1hIXYgXFfscfQrXVvSIZcDHWWMh85WLLN~lR1~T9jpbqVpSS5EQwkctz2vPubMmIk~7q4A15w__" alt="Home">Beranda</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//c853121528a34335/ui-element.png?Expires=1832146616&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=rXWJgsXMAejsf~KoifJx4aTignhXSdnxqZcITfxDgqi02h9r6HOAvl3vHRmGv2CvZE2bvPkx1cMjchE0LRxH7gbsrT7hiCxVZObQrhtmn99GOkCN5Yb2jMwVVgDrVI-aMkzS7lb1j8AGY7V6RdJQkYZ8EIc648tXiY0xNmhdZrLMhWZt02AOXD-roPl3~DBylyfRJ1NQSGoPSe2Bh3vNlxUU~x2P~ht8ZW55M9-flQc5ynoWhuHgfRDKXBOzys65Rncm~Vf2X9wnKXK2idnibZHwgfW2lLF7x4uSVyPm2LxSIn7sjSP5wW4ufYkrCplSKiBT1pvaaWmVrxLVtoMMRw__" alt="Trending">Shorts</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//cccfcee486544488/video%20(1).png?Expires=1832146616&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=mLBBh8w8IGDxdxszJ-IIet1A5sGBfKT8gpvfMllkYoEafozB-SzEC2iufgw2YH~Ltvb8zEQ~UOPDg0dnkAbj2oG-SOFS5M~c3PI5NWD6ec0U7WHuEaSTuDAv5pfInggrQM7v3n1uibs0xuNV69BtHA5xLZD15~Ql033un-mN~o2yTkdptqLNbd5KlMJyu9BXIgiMck4qIqBkYehmur4YwRdHb20QAyXdH3oBT85QpbE7jCG1B1z1tPFqEc8xcMbEFsT7yz0aMPYnHAccuCUZK-arvvzskHdky7wymPFOxQ8A-bIoHu-mQzhQBvbgyhNo~x5w64p6dSbSBZXvjfgQdw__" alt="Subscriptions">Subscriptions</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//d2c8b73b35f14348/history.png?Expires=1832154588&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=2nczaBs4HTAdqLSOFR-5NTmHR9k5Y9ok9RKjs7~AkKa6GNUoiR0SlyqGjgB8Lrfde5H-1qYPUNIetF6bO3UODc9T1uvzZoq4r0-ychvgHkwGJv0iPnbgQQhPqXxaXqO5S1KP3QwuSmIsIYpL1F2fpcDjouYOnoQYWVwY-LyUl-adlSOEdw631cTRM~C3YSd1C3zM-St~TX~uozSmH1hfii-wC1jKjOyxFo8ptJuXUD4SWNUnhiE1mpJYJYmDPXMAJ96ZnJJEJB2UAAKtX2rpYPlsIPHpqa7Tr~4hbpNx4hN~SjwNPtRp5KcgN0SICTVSr~IMl93XGJTO-~cDOR3OiA__" alt="Library">History</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//e3b028910b2f4713/playlist.png?Expires=1832154588&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=sQoJyGkjLeYtPd3Mks-f98~W1yCGdAS12DZ9xhnzruJ2Eu-6WslD13hW45K25Y~dKDyC~nSrNUTfg4TFNHJ0~ahnB8hfc-qHd-bP01gh~BFUgsEYxzC10h2XWkZEplPzy7C5aH-9hgMvXiMBA8A0dLEQUJG~pNw9zJJ2d7fmq0kJWZsDQjWq-lxW5gCF3ECi9nh-BhSbjx6ESFst4zrkyDyMTxW6F2evZBt6vYxYkdUZ1DkGnhPM1AW4F5t3cOFQdc8QTvSwJaHGURtIOWrAwVP-xLj5OTM-fyEBzMD1oQUjgUz8zWN8k1S8xNqej92ZuOdMUqKDMbzO~vzxPIYiiw__" alt="History">Playlist</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//73889ef76e8f4a42/playlist%20(1).png?Expires=1832154588&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=teRJbT9AlutHTQS0vNvO6YbZn5wCLEHhJn37cOgGN-O24eQaL1inZQWTFJMrH5BHhPSOvS8ucGD2lj39DfOY4jVU0owateLhTJxNdA7Mfd8QmJQ1~Nf8kod8Yw7JfTtipGoLmQJxAya8LWo8kvwd6-ETO82k4nteDWttv-6-nvPPt0xHDROTA6LtSFzPND5UhEVBG2zPWa5WASKwx~5yvbMuzMxJYmSzWmUSa4-mfrAVIdKQ6OeBEbKPJUusTyJXSbrMO93zSplKmiLSSLJXh~tHvcx4IkedmxxRUNEuAFrA3SwPU6Ttd1BbCApo-RSANEt7O2V2Qne-Kkhwz3elzw__" alt="Trending">Video Anda</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//1c4f1e452d74429d/clock.png?Expires=1832154588&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=NsEcVu3GFsN227U3dxhXZ0DVErkumnSdTSf6Ly6mvuG6lksCy9RPpEbHhP8kurGffA5n5xDXJX9ESI6rM05TsbbR6GbIKW7VCacJRj0NAvt8CSbpjFwid~GqQMJ5sKPEQ3kVqGglTAxjy4JoiED3E6g69ezXNYDQahmOftbtYDbAXO7cBtyBPjf6dDVWWeUs74qLR9NNOkz61DgyQbeYobKoBxTSuk-~iogwsdlW75B8Pd5EyBbL-c5K8ljTDPcizkRsdZREVdD-i0~7PxDyoetd7mTU~X2aSnItddY9tu~SsSOB0lnweHn7iD-ohK~hyJJ2pUdtGo-aaxd5l8yKKA__" alt="Trending">Tonton nanti</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//7d0f09c770cb4f64/like.png?Expires=1832154588&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=0VKVWzVrjiO9-yB8K597xdPYoVxTUbozSNPQSlMY6vqZdMaZNdgIE6mkpHvXlq-JAzY2i9gphwCHrxjHcQKKMHhwl2uRWMliFGwW7xlPFV~-RW8cHNgOywQSTvfUGN8B6T8SEUv0Zd6FygDOciAPxSeTIl~1kRU6BdXUcJfeifXfBq14mIWMMuY1PHnsJuvlWPX-PRxZn2~o4HM6GunX9vYJYW3~XgkrN5CytJhAULl4eefpDhzYU~B1~ivboFWKi4-JbPlo1y~eY2wLeVNh~wHfLRHaIunYdDA84MliDNbmQb3VGlB3-9tBHFsBUDROZX2973poKvjCDQI0Y1DFHw__" alt="Trending">Video yang disukai</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//2443f5fa0e36467c/download.png?Expires=1832146616&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=BRVIczrMityYpbtpQ54RnZOTxHxPHgRNeDFIOqd3JcGd5rEr~GFB~r~-yZtgd9x3N79x4lrj-OKw-i2XaH-1VptN5~dMiiSF6l1b3ZUsNzSB4u32mdWOkWvQebgXdctUR3N3Prz4CK85aLjZ3~Cgd8x2ur7YtZi7eeFWJ3wAwTKu0npr0rouTN4pXOHvFDyvixCICiZGPLRm2MBjev4uO2NhWdpP~KU5yijQYO-9fqaITcGr~O7079D~Av6Q31ZgW0jx0K2gioRpt37Cl3LA9BsaJdcx1aaBhd-65hcPRX1WWOCIe5KA5oWaxkLfDTlqEekjVPqjIoiMs0xtJYopkA__" alt="Trending">Download</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//8fde3217111b4405/trending-topic.png?Expires=1832146616&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=SmDR~qkleK69buYTQmO71t2Z6eHwZpyN20zXWPy3ylLKLCTyIIEvK9dhBoxJbRynyIe5Cz~3Q1lar3CtoqtTIMPwiJ8qMb39LUOljeSpXe0szMEBxX8W~fWDuKGZfctyaeTdgstuISxyOUoN1KyItdUXitqQZly6F0uJprg2QRGHv~atIKkfRvrNHjY7MSo8G5p~LF-CTeRSbE~eRQ0l4bS7M0f49WuT7cANfF4fybtQCP5mR~5kH5NOOb6vCrWccaIFNkJ-6RXuFQi4rikbcEsZSQz869FPd5hrJpkDswsZCWP6D2kmtFr5Qd4ay6Nw7XZK7b0qIRH8fkCTOB2Psw__" alt="Trending">Trending</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//80a3169e50594b76/musical-note.png?Expires=1832154588&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=HybZymqtI54P2WDJkUQN6zGPuHVd6X49WZqSCAN3heIV5RYbbxAmCjFJ6uP3hVXH-9EnL1DLKcy8Ek5FQbQ89mY4ilE0gAaUASgiOUQ0S9CQvlYtx4LPQ-iCdMwQtKvWEFepvGrT1hVySLrOM9FYKI~X-rpXDgYCfG7RzujGNKLOsmgv-PuSUHm7tnunhC4XWy4Ih2N2VpT9jy-PpYlsJ4TvpYdGkb1NroLiUNXyz9vBe94H6r62SThzEf-GycEjsncV-6b7LnfPP1BMVyaXDRHUv9O-GVJaKWzY9san-jO~fj5QigZm08zHTOxZhlaYOr7h~tpuBrWFSdRnrQpv9g__" alt="Trending">Musik</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//cb34f87334c144f7/video%20(2).png?Expires=1832154588&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=uDP86WYIJvlN2TcCMHWYRYOlHQMsKQRk9H4xFb7-gsFR4rnuNsPmOPDjY89VX0n7okIWuNTJCnqm9v6CmVGYjb-PGX97CaKCOTq753JRWfOxZsc2~H0voYC19arkXagdcWQDwFHGSQCm7rt8RdGJxdGo94B6-bEceeJJVozyQqSqCLhTGcgH0R35ridxxi3XxUzkJBydYMNYmNdx1uBrtpQ4FGy1nj5odOd5GmmsmnhQ4Sv8kQsdtgpSZBB1iFC-z1a4Iffn6Q8JK1Q~1lBYWmDehuTySH~B6UHGJ3B2kl3gtOZsu~7yueXa-UjQZAMvNZmzzpiriuWrHFGNBfBTLQ__" alt="Trending">Film</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//ee6c47067031404d/console.png?Expires=1832154588&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=YxAHRh91tgm--4GofrXQWMy18NfXEf3PoT3a6A3FbLLUFlmq7iRvHWmI1IlC~4NdG3U6eD-NMhcw~vjFu98MaUj5VODvG5c5RFoTkOJiwIb~R-h4n25sMeuHFZU66YDZsv3YfD592m0X-z7EJHe2EWPl5rjeBM23Etf74aRT0Gi-ofYZtW1n1nrzLdeDy4Eh8lw4aLkGBxZqURRLzGsat3ykQtCLvh3GQPLAjqOwMBwmNqwEXJDKtsyhP~1M4sjKwCl11E81DEGtaTxMjfEvCaUkzRF1BABxydhzu78TR6VtzKGNvhijxJZyuS254TMlYyUFruE7KUoTRa8mBO212Q__" alt="Trending">Game</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//21268acc06f04d06/news.png?Expires=1832154588&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=CqgQNLd267iHQLub8bg~Z6cuYrEV6l12Q9n3690fifvI~Fk-dQezslim0Yzq6RG6sLibh7VuydAZoslGMvXY6QD3SwTwK3Z8FczXw85Mno~nFG-tc5RbEuZaYWYgzkaEL87jUtt8rOInb1gc4pRgOhKpjwM1~~BrPDp12D0RYGR7gSTy8TXBCUqqdsUXLKc~HQLxRNd0U~wJPFINeAzZRjr~pbO0RHxsbJD-R7zeWIMrpUOa5QMfbdsyqycj3U9UM~bv~8wYQTQO7yQ8vteiTLli5zNZ~0wwTanROhIp9uhUpG2KOQNTV-g-gsIU3HExm~5BFBqxOWTPuZqa4mKGvA__" alt="Trending">News</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//375f077981b34814/award.png?Expires=1832154588&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=0IkAvavCFhI1-AKfsPS0OFghccCDYg4~7BRs92FlB6q8WXThsquPjDmwLUvyVXaEkDALXTL7VvvYdqvC73ZM0iy0gBsNAhTc8hjvrjY4UvDoZW3JLrUgdpHcYcWUB9dHP48-1CN07Svr8KkbF38iLTKl3qgKDxKTq2m0fmJzNMK795XEDs9R-bFr0BnrvhYMf7u1Q5SMAlURlsLznZuMjqS-UmNg86jkE0HLViQu7saKQAkyUoh9LlU2xYJPLiDgkXMBVw40di50weWPhu0Z95wgI1D7LSK8uolszpP4nEnjQAJAcbwiYYw~dhhdyurE9VvN419NirfnpDb1vQr3Lw__" alt="Trending">Olahraga</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//3a2e5d65373646f6/setting.png?Expires=1832154846&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=QTzKkxatIHrr6CVIeQ7lw22Vd0NIRsiHZTf1N8HAbwd1MAIR90la99LJ2-Rqsqtm3qYqn7ABaoZZi6q3NJZyCF562aXmoO~Dscb6P7FjXRb6u7xGEZ~uxfMhlpRTvDBWfYEFzoqnbiVeYMVtxgX0kjjtvhs6K2fJ3xhzAbMVr2PzHtn3UJELX6CGq07wQDoqustOL6A-ivp6Fy2ROaZsRYhF0QaBC7zAyJdJGdHwgbGgeOngA4Wy79yIHz4FZlVz8T~kr6hV1gXczm-t8fq8Op3cmeSpGOiTTUvCIQPzu8Is3wDecOL1JkA9yLb1wK~o8nSzoJHskqN~Smn4IP1KIw__" alt="Trending">Setelan</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//639a2c1af3a349cb/red-flag.png?Expires=1832154846&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=a2ab4vkmy9-yhzE-jfQKPTYYFQ21bVhmGDE9-I~qySU-Y1PTwxgZzpqYmj9XJqjFFaL8iRoGrR8q5QtRJW7CKRDXPrcvYYX7EIyyTKXRBfa8W9k7~HhmqszET-gJpCTj0gvD24Keyt681vW~L5SpnzdlvfKhkhxwgehoFUEGYibg8t9B0X98Nqp8EuPi6noiBQMSaXZXe0OsNKIKeX64a0TONKGRjSCTdNrIxKz83dPko0Qd1YwXer8i~jmx7Yh-zngBr2xxaYd1tBtpsCmV-KhoFRwL9YTAGGhbdUcBVRV17vV09neA0sQEKwsnBE~whIZ2m1JVXIXhGYzIgTSCvQ__" alt="Trending">Histori Laporan</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//67347adf888b4692/question.png?Expires=1832154846&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Gjp9VqBKYSLRYaIQAChk~X6vagI1HIYaY7ajw2Dr6MuGkFlkNZk8gak7VQ7NQUVW8oPJp0AxIuVYq1IXey9heXksdHDmP7~N5pSwsagXnYAlCF4Zdkxk~aT1fNTcgDdW1ho3-6o10gPfYFiwsiq9NyBOXwWAu6QVUph1ioVvpjkrnjfjpMhYD41Z1feYLYixw5L2KkA6WLrS5udonnDG3ZK0KygXDCfX5sFSyrTpyAoQwZhqTT3KDlB4MKDrvGb3t8DiVZ5pNcHvIL53f2BfUx-SEm0I3kOW5dQxV-ZWmZpYNRVx1~H6PGbEbdAUoWEEloBL7UDn1nRN3ThtG3ulRA__" alt="Trending">Bantuan</a>
+        <a href="#"><img src="https://media-hosting.imagekit.io//f901680b7be94ea0/information.png?Expires=1832154846&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=iYXa9gF-~hQBY21Otxd1skIPqomxAEP9Eq-neoeQeOFUNWnywwVjRFCYPlJsQ~HPKAKH0~3tG853Cr45FjQyosGAFLNo4tJth5eeKuSJf4aLyPTzawhhGw6jLZdXCmAfXFBFRq2l73p3Z4Y~qo7MFU7tI~c98xVFf3OR-37xyBi1Fo-Ph0NN6aWGahDpwRx5XHfhilfKnOhyAoo3TAhT-SPE5ORg6pqY6P5OOANi8poEreZh61bBb7gPqbqtsfyzz6qQISmMSs6WqGEvY2P9TXaqBkHMSiGw1kBdbTU0pscGMelPUhl9dhn~BsCaRCsM-f48X3CFonsOe043aZW7BA__" alt="Trending">Kirim Masukan</a>
+        <a href="#"></a>
+    </nav>
+
+    <main>
+        <div class="videos">
+            <div class="video">
+                <img src="https://i.ytimg.com/vi/5jTr8n0pLi8/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDeQQRHtoubXbwSAm9-5PZQJCWAuw" alt="Video Thumbnail">
+                <div class="info">
+                    <h3>Pertarungan Hidup & Mati di Squid Game Roblox 🤓</h3>
+                    <p>Wielino INO • 1M views • 2 days ago</p>
+                </div>
+            </div>
+            <div class="video">
+                <img src="https://i.ytimg.com/vi/-32I5hxNmpY/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLA9v-bhrRL-ArrRfu8v7n4-vROlRQ" alt="Video Thumbnail">
+                <div class="info">
+                    <h3>1 JAM KEKUATAN DEWA - GTA 5 ROLEPLAY</h3>
+                    <p>Jelool • 534k views • 1 week ago</p>
+                </div>
+            </div>
+            <div class="video">
+                <img src="https://i.ytimg.com/vi/gD424I-1PZo/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLA9mq-IaFv6IGEZPacNtchFdMWrAw" alt="Video Thumbnail">
+                <div class="info">
+                    <h3>Garena Delta Force - Kiana Ulti, Helikopter, Mobil Musuh</h3>
+                    <p>Milyhya • 2,7M views • 1 month ago</p>
+                </div>
+            </div>
+            <div class="video">
+                <img src="https://i.ytimg.com/vi/iA5zi0R8VlQ/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDH3hTpjiLow03GLy7Ki4Yr8wr75A" alt="Thumbnail">
+                <div class="info">
+                    <h3>Kekeliruan Yang Mempengaruhi Cara Berpikir Kita</h3>
+                    <p>Ardha Reads • 200k views • 1 days ago</p>
+                </div>
+            </div>
+            <div class="video">
+                <img src="https://i.ytimg.com/vi/8VAaNg34ztg/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLD4tuwNHUA7aWjQTDh9ssvJl7ks-A" alt="Thumbnail">
+                <div class="info">
+                    <h3>KISAH YANG TIDAK DICERITAKAN MEDIA TENTANG 95% STARTUP HANCUR!?</h3>
+                    <p>Hermanto Tanoko • 5,4M views • 2 week ago</p>
+                </div>
+            </div>
+            <div class="video">
+                <img src="https://i.ytimg.com/vi/zBrap5Iv3XQ/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLC3XoZOICLdEjnbz64tMdRVSCP2lg" alt="Thumbnail">
+                <div class="info">
+                    <h3>Bagaimana Mode Incognito Menipu Kalian?</h3>
+                    <p>Duzzle • 128k views • 5 days ago</p>
+                </div>
+            </div>
+            <div class="video">
+                <img src="https://i.ytimg.com/vi/Nu16eO1Qu88/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCJTjEuH9UaxjugS86jxKvQL5MUew" alt="Thumbnail">
+                <div class="info">
+                    <h3>200.000+ Tahun Perjalanan Manusia, dalam 13 Menit</h3>
+                    <p>Kok Bisa? • 963k views • 1 week ago</p>
+                </div>
+            </div>
+            <div class="video">
+                <img src="https://i.ytimg.com/vi/WkK2Ute59AY/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDavAv6j5pX3CM-HNxIkMEZedvaBA" alt="Thumbnail">
+                <div class="info">
+                    <h3>Adu Mekanik Nih Boss - Buckshot Roulette Indonesia</h3>
+                    <p>MiawAug • 3,7M views • 2 month ago</p>
+                </div>
+            </div>
+            <div class="video">
+                <img src="https://i.ytimg.com/vi/QfXc_BoyuYk/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBKI6nrpqXrXajkRNHKN3EliTCwAw" alt="Thumbnail">
+                <div class="info">
+                    <h3>AKU MENJADI PEMBUNUH BAYARAN - GTA 5 ROLEPLAY</h3>
+                    <p>Jelool • 247K views • 2 days ago</p>
+                </div>
+            </div>
+            <div class="video">
+                <img src="https://i.ytimg.com/vi/lDTA9DdO8Sg/hq720.jpg?sqp=-oaymwFBCNAFEJQDSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AH-CYAC0AWKAgwIABABGGUgRShlMA8=&rs=AOn4CLBETBc9pFBtPmZPfQ5HObQJUpMgJg" alt="Thumbnail">
+                <div class="info">
+                    <h3>Kauroko Waguri x Pasilyo - SunKissed Lola</h3>
+                    <p>Edan Kart • 1,4M views • 5 days ago</p>
+                </div>
+            </div>
+            <div class="video">
+                <img src="https://i.ytimg.com/vi/2PCM9MyLrDM/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBBCESh2P-HNgceTfyPQQ-XTyUFOA" alt="Thumbnail">
+                <div class="info">
+                    <h3>Kenapa Kalian Harus Baca Manga Kaoru Hana wa Rin to Saku</h3>
+                    <p>AldiMods • 14,7M views • 1 month ago</p>
+                </div>
+            </div>
+            <div class="video">
+                <img src="https://i.ytimg.com/vi/9nsQgC3hQDs/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLAAnjRacmUm0aPJBb9TSZBVhnbKnw" alt="Thumbnail">
+                <div class="info">
+                    <h3>How To Draw Kaoruko Waguri | Step By Step | Easy Tutorial |</h3>
+                    <p>Aze_artzz • 972k views • 1 week ago</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
